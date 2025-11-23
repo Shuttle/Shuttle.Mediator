@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Shuttle.Core.Contract;
+﻿using Shuttle.Core.Contract;
 
 namespace Shuttle.Core.Mediator.Tests;
 

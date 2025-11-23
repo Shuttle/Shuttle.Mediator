@@ -1,29 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Shuttle.Core.Reflection;
 
 namespace Shuttle.Core.Mediator;
 
-public class ParticipantDelegate
+public class ParticipantDelegate(Delegate handler, IEnumerable<Type> parameterTypes)
 {
-    private readonly IEnumerable<Type> _parameterTypes;
     private static readonly Type ParticipantContextType = typeof(IParticipantContext<>);
 
-    public ParticipantDelegate(Delegate handler, IEnumerable<Type> parameterTypes)
-    {
-        Handler = handler;
-        HasParameters = parameterTypes.Any();
-        _parameterTypes = parameterTypes;
-    }
-
-    public Delegate Handler { get; }
-    public bool HasParameters { get; }
+    public Delegate Handler { get; } = handler;
+    public bool HasParameters { get; } = parameterTypes.Any();
 
     public object[] GetParameters(IServiceProvider serviceProvider, object handlerContext)
     {
-        return _parameterTypes
+        return parameterTypes
             .Select(parameterType => !parameterType.IsCastableTo(ParticipantContextType)
                 ? serviceProvider.GetRequiredService(parameterType)
                 : handlerContext

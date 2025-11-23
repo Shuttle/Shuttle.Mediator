@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Shuttle.Core.Mediator;
+﻿namespace Shuttle.Core.Mediator;
 
 public interface IParticipantDelegateProvider
 {

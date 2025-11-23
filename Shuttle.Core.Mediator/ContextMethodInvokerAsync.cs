@@ -1,7 +1,5 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Reflection.Emit;
-using System.Threading.Tasks;
 
 namespace Shuttle.Core.Mediator;
 
@@ -14,7 +12,7 @@ internal class ContextMethodInvokerAsync
     public ContextMethodInvokerAsync(MethodInfo methodInfo)
     {
         var dynamicMethod = new DynamicMethod(string.Empty,
-            typeof(Task), new[] { typeof(object), typeof(object) },
+            typeof(Task), [typeof(object), typeof(object)],
             ParticipantContextType.Module);
 
         var il = dynamicMethod.GetILGenerator();

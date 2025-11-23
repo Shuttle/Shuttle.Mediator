@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿namespace Shuttle.Core.Mediator;
 
-namespace Shuttle.Core.Mediator;
-
-public class ParticipantDelegateProvider : IParticipantDelegateProvider
+public class ParticipantDelegateProvider(IDictionary<Type, List<ParticipantDelegate>> participantDelegates)
+    : IParticipantDelegateProvider
 {
-    public ParticipantDelegateProvider(IDictionary<Type, List<ParticipantDelegate>> participantDelegates)
-    {
-        Delegates = participantDelegates;
-    }
-
-    public IDictionary<Type, List<ParticipantDelegate>> Delegates { get; }
+    public IDictionary<Type, List<ParticipantDelegate>> Delegates { get; } = participantDelegates;
 }

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Shuttle.Core.Contract;
 
 namespace Shuttle.Core.Mediator;
@@ -17,23 +13,22 @@ public class Mediator : IMediator
     private readonly Dictionary<string, ContextMethodInvokerAsync> _methodCacheAsync = new();
     private readonly Dictionary<Type, List<ParticipantDelegate>> _delegates;
     private readonly IServiceProvider _serviceProvider;
+    private readonly MediatorOptions _mediatorOptions;
 
-    public Mediator(IServiceProvider serviceProvider, IParticipantDelegateProvider participantDelegateProvider)
+    public Mediator(IOptions<MediatorOptions> mediatorOptions, IServiceProvider serviceProvider, IParticipantDelegateProvider participantDelegateProvider)
     {
+        _mediatorOptions = Guard.AgainstNull(mediatorOptions).Value;
         _serviceProvider = Guard.AgainstNull(serviceProvider);
         _delegates = Guard.AgainstNull(Guard.AgainstNull(participantDelegateProvider).Delegates).ToDictionary(pair => pair.Key, pair => pair.Value);
     }
-
-    public event EventHandler<SendEventArgs>? Sending;
-    public event EventHandler<SendEventArgs>? Sent;
 
     public async Task SendAsync(object message, CancellationToken cancellationToken = default)
     {
         Guard.AgainstNull(message);
 
-        var onSendEventArgs = new SendEventArgs(message, cancellationToken);
+        var onSendEventArgs = new SendEventArgs(message);
 
-        Sending?.Invoke(this, onSendEventArgs);
+        await _mediatorOptions.Sending.InvokeAsync(onSendEventArgs, cancellationToken);
 
         var messageType = message.GetType();
         var interfaceType = ParticipantType.MakeGenericType(messageType);
@@ -92,7 +87,7 @@ public class Mediator : IMediator
             }
         }
 
-        Sent?.Invoke(this, onSendEventArgs);
+        await _mediatorOptions.Sent.InvokeAsync(onSendEventArgs, cancellationToken);
     }
 
     private async Task<ContextMethodInvokerAsync> GetContextMethodInvokerAsync(Type participantType, Type messageType, Type interfaceType)

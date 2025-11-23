@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Shuttle.Core.Mediator.Tests;
+﻿namespace Shuttle.Core.Mediator.Tests;
 
 public abstract class AbstractParticipant
 {

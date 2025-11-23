@@ -1,16 +1,9 @@
-﻿using System.Threading;
-using Shuttle.Core.Contract;
+﻿using Shuttle.Core.Contract;
 
 namespace Shuttle.Core.Mediator;
 
-public class ParticipantContext<TRequest> : IParticipantContext<TRequest>
+public class ParticipantContext<TRequest>(TRequest message, CancellationToken cancellationToken) : IParticipantContext<TRequest>
 {
-    public ParticipantContext(TRequest message, CancellationToken cancellationToken)
-    {
-        Message = Guard.AgainstNull(message);
-        CancellationToken = cancellationToken;
-    }
-
-    public TRequest Message { get; }
-    public CancellationToken CancellationToken { get; }
+    public TRequest Message { get; } = Guard.AgainstNull(message);
+    public CancellationToken CancellationToken { get; } = cancellationToken;
 }

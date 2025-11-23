@@ -1,18 +1,12 @@
-﻿using System.Threading.Tasks;
-using Shuttle.Core.Contract;
+﻿using Shuttle.Core.Contract;
 
 namespace Shuttle.Core.Mediator.Tests;
 
-public class MultipleParticipants :
+public class MultipleParticipants(IMessageTracker messageTracker) :
     IParticipant<MultipleParticipantMessageA>,
     IParticipant<MultipleParticipantMessageB>
 {
-    private readonly IMessageTracker _messageTracker;
-
-    public MultipleParticipants(IMessageTracker messageTracker)
-    {
-        _messageTracker = Guard.AgainstNull(messageTracker);
-    }
+    private readonly IMessageTracker _messageTracker = Guard.AgainstNull(messageTracker);
 
     public async Task ProcessMessageAsync(IParticipantContext<MultipleParticipantMessageA> context)
     {

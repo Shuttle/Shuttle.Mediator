@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace Shuttle.Core.Mediator.Tests;
+﻿namespace Shuttle.Core.Mediator.Tests;
 
 public class RegisterMessage
 {

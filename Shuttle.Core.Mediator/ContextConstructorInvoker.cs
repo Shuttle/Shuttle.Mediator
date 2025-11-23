@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reflection.Emit;
-using System.Threading;
+﻿using System.Reflection.Emit;
 
 namespace Shuttle.Core.Mediator;
 
@@ -13,22 +11,20 @@ internal class ContextConstructorInvoker
     public ContextConstructorInvoker(Type messageType)
     {
         var dynamicMethod = new DynamicMethod(string.Empty, typeof(object),
-            new[]
-            {
-                typeof(object),
-                typeof(CancellationToken)
-            }, ParticipantContextType.Module);
+        [
+            typeof(object),
+            typeof(CancellationToken)
+        ], ParticipantContextType.Module);
 
         var il = dynamicMethod.GetILGenerator();
         il.Emit(OpCodes.Ldarg_0);
         il.Emit(OpCodes.Ldarg_1);
 
         var contextType = ParticipantContextType.MakeGenericType(messageType);
-        var constructorInfo = contextType.GetConstructor(new[]
-        {
+        var constructorInfo = contextType.GetConstructor([
             messageType,
             typeof(CancellationToken)
-        });
+        ]);
 
         if (constructorInfo == null)
         {

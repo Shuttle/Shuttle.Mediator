@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-namespace Shuttle.Core.Mediator;
+﻿namespace Shuttle.Core.Mediator;
 
 public interface IParticipantContext<out TRequest>
 {

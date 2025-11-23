@@ -1,5 +1,3 @@
 ﻿namespace Shuttle.Core.Mediator.Tests;
 
-public class MultipleParticipantMessageA
-{
-}
+public class MultipleParticipantMessageA;

@@ -14,7 +14,7 @@ public class RequestMessage<TRequest>
         Request = request;
     }
 
-    public string Message { get; private set; } = default!;
+    public string Message { get; private set; } = string.Empty;
 
     public bool Ok => string.IsNullOrWhiteSpace(Message);
 
@@ -22,7 +22,7 @@ public class RequestMessage<TRequest>
 
     public RequestMessage<TRequest> Failed(string message)
     {
-        Guard.AgainstNullOrEmptyString(message);
+        Guard.AgainstEmpty(message);
 
         Message = message;
 

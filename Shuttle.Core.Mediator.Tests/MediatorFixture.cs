@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using NUnit.Framework;
-using Shuttle.Core.Contract;
 
 namespace Shuttle.Core.Mediator.Tests;
 
@@ -39,7 +34,7 @@ public class MediatorFixture
 
         services.AddMediator(builder =>
         {
-            builder.AddParticipant(async (IParticipantContext<WriteMessage> context) =>
+            builder.AddParticipant(async (IParticipantContext<WriteMessage> _) =>
             {
                 callCount++;
 
@@ -64,10 +59,24 @@ public class MediatorFixture
         {
             builder.AddParticipant<WrittenParticipantA>();
             builder.AddParticipant<WrittenParticipantB>();
+
+            builder.Options.Sending += (args, _) =>
+            {
+                Console.WriteLine($@"[sending] : text = '{((MessageWritten)args.Message).Text}'");
+
+                return Task.CompletedTask;
+            };
+
+            builder.Options.Sent += (args, _) =>
+            {
+                Console.WriteLine($@"[sent] : text = '{((MessageWritten)args.Message).Text}'");
+
+                return Task.CompletedTask;
+            };
         });
 
         var provider = services.BuildServiceProvider();
-        var mediator = new Mediator(provider, new ParticipantDelegateProvider(new Dictionary<Type, List<ParticipantDelegate>>()));
+        var mediator = new Mediator(provider.GetRequiredService<IOptions<MediatorOptions>>(), provider, new ParticipantDelegateProvider(new Dictionary<Type, List<ParticipantDelegate>>()));
 
         await mediator.SendAsync(new MessageWritten { Text = "hello participants!" });
 
@@ -89,10 +98,24 @@ public class MediatorFixture
         {
             builder.AddParticipant(registerA);
             builder.AddParticipant(registerB);
+
+            builder.Options.Sending += (args, _) =>
+            {
+                Console.WriteLine($@"[sending] : messages = '{string.Join(" / ", ((RegisterMessage)args.Message).Messages)}'");
+
+                return Task.CompletedTask;
+            };
+
+            builder.Options.Sent += (args, _) =>
+            {
+                Console.WriteLine($@"[sent] : messages = '{string.Join(" / ", ((RegisterMessage)args.Message).Messages)}'");
+
+                return Task.CompletedTask;
+            };
         });
 
         var provider = services.BuildServiceProvider();
-        var mediator = new Mediator(provider, new ParticipantDelegateProvider(new Dictionary<Type, List<ParticipantDelegate>>()));
+        var mediator = new Mediator(provider.GetRequiredService<IOptions<MediatorOptions>>(), provider, new ParticipantDelegateProvider(new Dictionary<Type, List<ParticipantDelegate>>()));
         var message = new RegisterMessage();
 
         await mediator.SendAsync(message);
