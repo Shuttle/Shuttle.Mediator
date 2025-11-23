@@ -115,9 +115,7 @@ public class MediatorBuilder(IServiceCollection services)
     {
         Guard.AgainstNull(assembly);
 
-        var reflectionService = new ReflectionService();
-
-        foreach (var type in reflectionService.GetTypesCastableToAsync(ParticipantType, assembly).GetAwaiter().GetResult())
+        foreach (var type in assembly.GetTypesCastableToAsync(ParticipantType).GetAwaiter().GetResult())
         {
             var interfaces = type.GetInterfaces();
 
