@@ -4,11 +4,9 @@ namespace Shuttle.Core.Mediator.Tests;
 
 public class RegisterParticipant : AbstractParticipant, IParticipant<RegisterMessage>
 {
-    public async Task ProcessMessageAsync(IParticipantContext<RegisterMessage> context)
+    public async Task ProcessMessageAsync(RegisterMessage message, CancellationToken cancellationToken = default)
     {
-        Guard.AgainstNull(context);
-
-        context.Message.Touch($"[proper] : {Id}");
+        Guard.AgainstNull(message).Touch($"[proper] : {Id}");
 
         await CallAsync();
     }

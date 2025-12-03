@@ -5,17 +5,17 @@ namespace Shuttle.Core.Mediator;
 
 public class ParticipantDelegate(Delegate handler, IEnumerable<Type> parameterTypes)
 {
-    private static readonly Type ParticipantContextType = typeof(IParticipantContext<>);
-
     public Delegate Handler { get; } = handler;
     public bool HasParameters { get; } = parameterTypes.Any();
 
-    public object[] GetParameters(IServiceProvider serviceProvider, object handlerContext)
+    public object[] GetParameters(IServiceProvider serviceProvider, object message)
     {
+        var messageType = message.GetType();
+
         return parameterTypes
-            .Select(parameterType => !parameterType.IsCastableTo(ParticipantContextType)
+            .Select(parameterType => !parameterType.IsCastableTo(messageType)
                 ? serviceProvider.GetRequiredService(parameterType)
-                : handlerContext
+                : message
             ).ToArray();
     }
 }

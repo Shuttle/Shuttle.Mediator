@@ -2,5 +2,5 @@
 
 public interface IParticipant<in T>
 {
-    Task ProcessMessageAsync(IParticipantContext<T> context);
+    Task ProcessMessageAsync(T message, CancellationToken cancellationToken = default);
 }

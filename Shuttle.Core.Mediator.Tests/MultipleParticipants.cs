@@ -8,16 +8,16 @@ public class MultipleParticipants(IMessageTracker messageTracker) :
 {
     private readonly IMessageTracker _messageTracker = Guard.AgainstNull(messageTracker);
 
-    public async Task ProcessMessageAsync(IParticipantContext<MultipleParticipantMessageA> context)
+    public async Task ProcessMessageAsync(MultipleParticipantMessageA message, CancellationToken cancellationToken = default)
     {
-        _messageTracker.Received(context.Message);
+        _messageTracker.Received(message);
 
         await Task.CompletedTask.ConfigureAwait(false);
     }
 
-    public async Task ProcessMessageAsync(IParticipantContext<MultipleParticipantMessageB> context)
+    public async Task ProcessMessageAsync(MultipleParticipantMessageB message, CancellationToken cancellationToken = default)
     {
-        _messageTracker.Received(context.Message);
+        _messageTracker.Received(message);
 
         await Task.CompletedTask.ConfigureAwait(false);
     }

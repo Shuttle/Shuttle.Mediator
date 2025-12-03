@@ -9,7 +9,6 @@ namespace Shuttle.Core.Mediator;
 public class MediatorBuilder(IServiceCollection services)
 {
     private static readonly Type ParticipantType = typeof(IParticipant<>);
-    private static readonly Type ParticipantContextType = typeof(IParticipantContext<>);
 
     private readonly Dictionary<Type, List<ParticipantDelegate>> _delegates = new();
 
@@ -65,22 +64,13 @@ public class MediatorBuilder(IServiceCollection services)
         }
 
         var parameters = handler.Method.GetParameters();
-        Type? messageType = null;
 
-        foreach (var parameter in parameters)
-        {
-            var parameterType = parameter.ParameterType;
-
-            if (parameterType.IsCastableTo(ParticipantContextType))
-            {
-                messageType = parameterType.GetGenericArguments()[0];
-            }
-        }
-
-        if (messageType == null)
+        if (parameters.Length < 1)
         {
             throw new ApplicationException(Resources.ParticipantTypeException);
         }
+
+        var messageType = parameters[0].ParameterType;
 
         _delegates.TryAdd(messageType, new());
         _delegates[messageType].Add(new(handler, handler.Method.GetParameters().Select(item => item.ParameterType)));

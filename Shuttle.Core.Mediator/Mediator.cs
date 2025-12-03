@@ -9,8 +9,7 @@ public class Mediator : IMediator
     private static readonly Type ParticipantType = typeof(IParticipant<>);
 
     private readonly SemaphoreSlim _lock = new(1, 1);
-    private readonly Dictionary<Type, ContextConstructorInvoker> _constructorCache = new();
-    private readonly Dictionary<string, ContextMethodInvokerAsync> _methodCacheAsync = new();
+    private readonly Dictionary<string, ParticipantInvokerAsync> _methodCacheAsync = new();
     private readonly Dictionary<Type, List<ParticipantDelegate>> _delegates;
     private readonly IServiceProvider _serviceProvider;
     private readonly MediatorOptions _mediatorOptions;
@@ -42,35 +41,15 @@ public class Mediator : IMediator
             throw new InvalidOperationException(string.Format(Resources.MissingParticipantException, messageType));
         }
 
-        ContextConstructorInvoker? contextConstructor;
-
-        await _lock.WaitAsync(cancellationToken);
-
-        try
+        foreach (var participant in participants)
         {
-            if (!_constructorCache.TryGetValue(messageType, out contextConstructor))
+            if (participant == null)
             {
-                contextConstructor = new(messageType);
-
-                _constructorCache.Add(messageType, contextConstructor);
+                continue;
             }
+
+            await (await GetContextMethodInvokerAsync(participant.GetType(), messageType, interfaceType)).Invoke(participant, message, cancellationToken).ConfigureAwait(false);
         }
-        finally
-        {
-            _lock.Release();
-        }
-
-        var participantContext = contextConstructor.CreateParticipantContext(message, cancellationToken);
-
-            foreach (var participant in participants)
-            {
-                if (participant == null)
-                {
-                    continue;
-                }
-
-                await (await GetContextMethodInvokerAsync(participant.GetType(), messageType, interfaceType)).Invoke(participant, participantContext).ConfigureAwait(false);
-            }
 
         if (delegates != null)
         {
@@ -78,7 +57,7 @@ public class Mediator : IMediator
             {
                 if (participantDelegate.HasParameters)
                 {
-                    await (Task)participantDelegate.Handler.DynamicInvoke(participantDelegate.GetParameters(_serviceProvider, participantContext))!;
+                    await (Task)participantDelegate.Handler.DynamicInvoke(participantDelegate.GetParameters(_serviceProvider, message))!;
                 }
                 else
                 {
@@ -90,7 +69,7 @@ public class Mediator : IMediator
         await _mediatorOptions.Sent.InvokeAsync(onSendEventArgs, cancellationToken);
     }
 
-    private async Task<ContextMethodInvokerAsync> GetContextMethodInvokerAsync(Type participantType, Type messageType, Type interfaceType)
+    private async Task<ParticipantInvokerAsync> GetContextMethodInvokerAsync(Type participantType, Type messageType, Type interfaceType)
     {
         var key = $"{participantType.Name}:{messageType.Name}";
 
