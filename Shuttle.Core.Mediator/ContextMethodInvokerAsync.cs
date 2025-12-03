@@ -4,11 +4,11 @@ using System.Threading;
 
 namespace Shuttle.Core.Mediator;
 
-internal class ParticipantInvokerAsync
+internal class ParticipantInvoker
 {
     private readonly ProcessMessageAsync _invoker;
 
-    public ParticipantInvokerAsync(MethodInfo methodInfo)
+    public ParticipantInvoker(MethodInfo methodInfo)
     {
         var dynamicMethod = new DynamicMethod(string.Empty, typeof(Task), [typeof(object), typeof(object), typeof(CancellationToken)], GetType().Module);
 

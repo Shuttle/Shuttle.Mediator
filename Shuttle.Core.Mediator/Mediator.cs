@@ -9,7 +9,7 @@ public class Mediator : IMediator
     private static readonly Type ParticipantType = typeof(IParticipant<>);
 
     private readonly SemaphoreSlim _lock = new(1, 1);
-    private readonly Dictionary<string, ParticipantInvokerAsync> _methodCacheAsync = new();
+    private readonly Dictionary<string, ParticipantInvoker> _participantInvokers = new();
     private readonly Dictionary<Type, List<ParticipantDelegate>> _delegates;
     private readonly IServiceProvider _serviceProvider;
     private readonly MediatorOptions _mediatorOptions;
@@ -69,7 +69,7 @@ public class Mediator : IMediator
         await _mediatorOptions.Sent.InvokeAsync(onSendEventArgs, cancellationToken);
     }
 
-    private async Task<ParticipantInvokerAsync> GetContextMethodInvokerAsync(Type participantType, Type messageType, Type interfaceType)
+    private async Task<ParticipantInvoker> GetContextMethodInvokerAsync(Type participantType, Type messageType, Type interfaceType)
     {
         var key = $"{participantType.Name}:{messageType.Name}";
 
@@ -77,7 +77,7 @@ public class Mediator : IMediator
 
         try
         {
-            if (!_methodCacheAsync.TryGetValue(key, out var contextMethod))
+            if (!_participantInvokers.TryGetValue(key, out var contextMethod))
             {
                 var methodInfo = participantType.GetInterfaceMap(interfaceType).TargetMethods.SingleOrDefault();
 
@@ -88,7 +88,7 @@ public class Mediator : IMediator
 
                 contextMethod = new(methodInfo);
 
-                _methodCacheAsync.Add(key, contextMethod);
+                _participantInvokers.Add(key, contextMethod);
             }
 
             return contextMethod;
