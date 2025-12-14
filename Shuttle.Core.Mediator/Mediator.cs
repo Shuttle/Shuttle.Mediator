@@ -41,13 +41,8 @@ public class Mediator : IMediator
             throw new InvalidOperationException(string.Format(Resources.MissingParticipantException, messageType));
         }
 
-        foreach (var participant in participants)
+        foreach (var participant in participants.OfType<object>())
         {
-            if (participant == null)
-            {
-                continue;
-            }
-
             await (await GetContextMethodInvokerAsync(participant.GetType(), messageType, interfaceType)).Invoke(participant, message, cancellationToken).ConfigureAwait(false);
         }
 
@@ -55,14 +50,7 @@ public class Mediator : IMediator
         {
             foreach (var participantDelegate in delegates)
             {
-                if (participantDelegate.HasParameters)
-                {
-                    await (Task)participantDelegate.Handler.DynamicInvoke(participantDelegate.GetParameters(_serviceProvider, message))!;
-                }
-                else
-                {
-                    await (Task)participantDelegate.Handler.DynamicInvoke()!;
-                }
+                await (Task)participantDelegate.Handler.DynamicInvoke(participantDelegate.GetParameters(_serviceProvider, message, cancellationToken))!;
             }
         }
 
