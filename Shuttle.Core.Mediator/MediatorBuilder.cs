@@ -3,6 +3,7 @@ using Shuttle.Core.Contract;
 using Shuttle.Core.Reflection;
 using System.Collections.ObjectModel;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Shuttle.Core.Mediator;
 
@@ -29,7 +30,7 @@ public class MediatorBuilder(IServiceCollection services)
 
     public MediatorBuilder AddParticipant(Type participantType, Func<Type, ServiceLifetime>? getServiceLifetime = null)
     {
-        getServiceLifetime ??= _ => ServiceLifetime.Singleton;
+        getServiceLifetime ??= _ => ServiceLifetime.Scoped;
         var isParticipantType = false;
 
         if (participantType.IsCastableTo(ParticipantType))
@@ -116,7 +117,7 @@ public class MediatorBuilder(IServiceCollection services)
                     continue;
                 }
 
-                Services.AddSingleton(ParticipantType.MakeGenericType(@interface.GetGenericArguments().First()), type);
+                Services.TryAddScoped(ParticipantType.MakeGenericType(@interface.GetGenericArguments().First()), type);
             }
         }
 
