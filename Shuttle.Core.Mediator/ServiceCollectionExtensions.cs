@@ -22,7 +22,7 @@ public static class ServiceCollectionExtensions
                 options.Sent = mediatorBuilder.Options.Sent;
             });
 
-            services.TryAddSingleton<IMediator, Mediator>();
+            services.TryAddScoped<IMediator, Mediator>();
             services.AddSingleton<IParticipantDelegateProvider>(_ => new ParticipantDelegateProvider(mediatorBuilder.GetDelegates()));
 
             return services;
