@@ -1,10 +1,12 @@
 # Shuttle.Core.Mediator
 
-```
-PM> Install-Package Shuttle.Core.Mediator
-```
-
 The Shuttle.Core.Mediator package provides a [mediator pattern](https://en.wikipedia.org/wiki/Mediator_pattern) implementation.
+
+## Installation
+
+```bash
+dotnet add package Shuttle.Core.Mediator
+```
 
 ## Configuration
 
@@ -12,26 +14,59 @@ In order to get all the relevant bits working you would need to register the `IM
 
 You can register the mediator using `IServiceCollection`:
 
-```c#
+```csharp
 services.AddMediator(builder =>
 {
     builder.AddParticipants(assembly);
     builder.AddParticipant<Participant>();
     builder.AddParticipant(participantType);
     builder.AddParticipant<Message>(participant);
-    builder.AddParticipant(async (IParticipantContext<T> context) =>
+    builder.AddParticipant(async (T message, CancellationToken cancellationToken) =>
     {
         await Task.CompletedTask.ConfigureAwait(false);
     });
+});
+```
+
+## Usage
+
+```csharp
+// Define a message
+public class UserCreated
+{
+    public string UserName { get; set; }
+}
+
+// Create participants
+public class EmailNotificationParticipant : IParticipant<UserCreated>
+{
+    public Task ProcessMessageAsync(UserCreated message, CancellationToken cancellationToken = default)
+    {
+        Console.WriteLine($"Sending welcome email to {message.UserName}");
+        return Task.CompletedTask;
+    }
+}
+
+public class AuditLogParticipant : IParticipant<UserCreated>
+{
+    public Task ProcessMessageAsync(UserCreated message, CancellationToken cancellationToken = default)
+    {
+        Console.WriteLine($"Auditing user creation: {message.UserName}");
+        return Task.CompletedTask;
+    }
+}
+
+// Send the message
+await mediator.SendAsync(new UserCreated { UserName = "john.doe" });
 ```
 
 ## IMediator
 
 The core interface is the `IMediator` interface and the default implementation provided is the `Mediator` class.
 
-Participants types are instatiated from the `IServiceProvider` instance.  This means that it depends on how you register the type as to the behaviour.
+Participants types are instantiated from the `IServiceProvider` instance. This means that it depends on how you register the type as to the behavior.
 
-```c#
+```csharp
 Task SendAsync(object message, CancellationToken cancellationToken = default);
 ```
 
@@ -39,10 +74,10 @@ The `SendAsync` method will find all participants that implement the `IParticipa
 
 ## Participant implementations
 
-```c#
+```csharp
 public interface IParticipant<in T>
 {
-    Task ProcessMessageAsync(IParticipantContext<T> context);
+    Task ProcessMessageAsync(T message, CancellationToken cancellationToken = default);
 }
 ```
 
