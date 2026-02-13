@@ -6,7 +6,7 @@ public class WrittenParticipantA : AbstractParticipant, IParticipant<MessageWrit
 {
     private readonly Guid _id = Guid.NewGuid();
 
-    public async Task ProcessMessageAsync(MessageWritten message, CancellationToken cancellationToken = default)
+    public async Task HandleAsync(MessageWritten message, CancellationToken cancellationToken = default)
     {
         Console.WriteLine($@"[event-{_id}] : text = '{Guard.AgainstNull(message).Text}'");
 

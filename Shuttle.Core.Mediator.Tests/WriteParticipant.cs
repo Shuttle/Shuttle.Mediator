@@ -4,7 +4,7 @@ namespace Shuttle.Core.Mediator.Tests;
 
 public class WriteParticipant : AbstractParticipant, IParticipant<WriteMessage>
 {
-    public async Task ProcessMessageAsync(WriteMessage message, CancellationToken cancellationToken = default)
+    public async Task HandleAsync(WriteMessage message, CancellationToken cancellationToken = default)
     {
         Console.WriteLine($@"[command] : text = '{Guard.AgainstNull(message).Text}'");
 
