@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Shuttle.Core.Contract;
 using Shuttle.Core.Reflection;
 using System.Collections.ObjectModel;
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
+using System.Xml.Linq;
 
 namespace Shuttle.Core.Mediator;
 
@@ -127,5 +128,11 @@ public class MediatorBuilder(IServiceCollection services)
     public IDictionary<Type, List<ParticipantDelegate>> GetDelegates()
     {
         return new ReadOnlyDictionary<Type, List<ParticipantDelegate>>(_delegates);
+    }
+
+    public MediatorBuilder Configure(Action<MediatorOptions> configureOptions)
+    {
+        Services.Configure(configureOptions);
+        return this;
     }
 }

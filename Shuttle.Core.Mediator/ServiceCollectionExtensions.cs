@@ -16,12 +16,7 @@ public static class ServiceCollectionExtensions
 
             builder?.Invoke(mediatorBuilder);
 
-            services.Configure<MediatorOptions>(options =>
-            {
-                options.Sending = mediatorBuilder.Options.Sending;
-                options.Sent = mediatorBuilder.Options.Sent;
-            });
-
+            services.AddOptions();
             services.TryAddScoped<IMediator, Mediator>();
             services.AddSingleton<IParticipantDelegateProvider>(_ => new ParticipantDelegateProvider(mediatorBuilder.GetDelegates()));
 

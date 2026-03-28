@@ -15,8 +15,6 @@ In order to get all the relevant bits working you would need to register the `IM
 You can register the mediator using `IServiceCollection`:
 
 ```csharp
-// The builder action is optional and may be omitted if there are no explicit 
-// configuration requirements.
 services.AddMediator(builder =>
 {
     builder.AddParticipants(assembly);
@@ -34,8 +32,21 @@ services.AddMediator(builder =>
     {
         await Task.CompletedTask;
     });
+
+    // Delegate registration with dependency injection
+    builder.AddParticipant(async (Message message, IService service, CancellationToken cancellationToken) =>
+    {
+        await service.DoSomethingAsync(message);
+    });
+
+    // Options configuration
+    builder.Configure(options =>
+    {
+        options.Sending.Register(async (sender, args) => await Task.CompletedTask);
+    });
 });
 ```
+
 
 ## Usage
 
@@ -69,7 +80,7 @@ public class AuditLogParticipant : IParticipant<UserCreated>
 await mediator.SendAsync(new UserCreated { UserName = "john.doe" });
 ```
 
-## IMediator
+## `IMediator`
 
 The core interface is the `IMediator` interface and the default implementation provided is the `Mediator` class.
 
@@ -81,7 +92,7 @@ Task SendAsync(object message, CancellationToken cancellationToken = default);
 
 The `SendAsync` method will find all participants that implement the `IParticipant<T>` with the type `T` of the message type that you are sending.
 
-## Participant implementations
+## `IParticipant` implementations
 
 ```csharp
 public interface IParticipant<in T>
@@ -90,13 +101,13 @@ public interface IParticipant<in T>
 }
 ```
 
-A participant would handle the message that is sent using the mediator.  There may be any number of participants that process the message. 
+A participant would handle the message that is sent using the mediator.  There may be any number of participants that process the message, but there must be **at least one** participant or delegate registered for the message type.
 
 ## Design philosophy
 
 There are no *request/response* semantics and the design philosophy here is that the message encapsulates the state that is passed along in a *pipes & filters* approach.
 
-## Options
+## `MediatorOptions`
 
 The `MediatorOptions` class provides the following events:
 
