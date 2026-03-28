@@ -15,15 +15,24 @@ In order to get all the relevant bits working you would need to register the `IM
 You can register the mediator using `IServiceCollection`:
 
 ```csharp
+// The builder action is optional and may be omitted if there are no explicit 
+// configuration requirements.
 services.AddMediator(builder =>
 {
     builder.AddParticipants(assembly);
     builder.AddParticipant<Participant>();
     builder.AddParticipant(participantType);
-    builder.AddParticipant<Message>(participant);
-    builder.AddParticipant(async (T message, CancellationToken cancellationToken) =>
+    
+    // The default service lifetime, Scoped, can be explicitly overidden:
+    builder.AddParticipant(participantType, _ => ServiceLifetime.Transient);
+    
+    // Instance registration
+    builder.AddParticipant(participant);
+    
+    // Delegate registration
+    builder.AddParticipant(async (Message message, CancellationToken cancellationToken) =>
     {
-        await Task.CompletedTask.ConfigureAwait(false);
+        await Task.CompletedTask;
     });
 });
 ```
