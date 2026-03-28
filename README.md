@@ -40,7 +40,7 @@ public class UserCreated
 // Create participants
 public class EmailNotificationParticipant : IParticipant<UserCreated>
 {
-    public Task ProcessMessageAsync(UserCreated message, CancellationToken cancellationToken = default)
+    public Task HandleAsync(UserCreated message, CancellationToken cancellationToken = default)
     {
         Console.WriteLine($"Sending welcome email to {message.UserName}");
         return Task.CompletedTask;
@@ -49,7 +49,7 @@ public class EmailNotificationParticipant : IParticipant<UserCreated>
 
 public class AuditLogParticipant : IParticipant<UserCreated>
 {
-    public Task ProcessMessageAsync(UserCreated message, CancellationToken cancellationToken = default)
+    public Task HandleAsync(UserCreated message, CancellationToken cancellationToken = default)
     {
         Console.WriteLine($"Auditing user creation: {message.UserName}");
         return Task.CompletedTask;
@@ -77,7 +77,7 @@ The `SendAsync` method will find all participants that implement the `IParticipa
 ```csharp
 public interface IParticipant<in T>
 {
-    Task ProcessMessageAsync(T message, CancellationToken cancellationToken = default);
+    Task HandleAsync(T message, CancellationToken cancellationToken = default);
 }
 ```
 
@@ -87,15 +87,12 @@ A participant would handle the message that is sent using the mediator.  There m
 
 There are no *request/response* semantics and the design philosophy here is that the message encapsulates the state that is passed along in a *pipes & filters* approach.
 
-However, you may wish to make use of one of the existing utility classes:-
+## Options
 
-### RequestMessage\<TRequest\>
+The `MediatorOptions` class provides the following events:
 
-The only expectation from a `RequestMessage<TRequest>` instance is either a success or failure (along with the failure message).
-
-### RequestResponseMessage\<TRequest, TResponse\>
-
-The `RequestResponseMessage<TRequest, TResponse>` takes an initial `TRequest` object and after the mediator processing would expect that there be a `TResponse` provided using the `.WithResponse(TResponse)` method.  The same success/failure mechanism used in the `RequestMessage<TRequest>` class is also available on this class.
+- `Sending`: An `AsyncEvent<SendEventArgs>` that is raised before a message is sent to participants.
+- `Sent`: An `AsyncEvent<SendEventArgs>` that is raised after a message has been sent to all participants.
 
 ## Considerations
 
