@@ -12,14 +12,12 @@ public class ServiceCollectionFixture
     {
         const int count = 100;
 
-        var services = new ServiceCollection();
+        var provider = new ServiceCollection()
+            .AddMediator()
+            .AddParticipants(GetType().Assembly)
+            .Services
+            .BuildServiceProvider();
 
-        services.AddMediator(builder =>
-        {
-            builder.AddParticipants(GetType().Assembly);
-        });
-
-        var provider = services.BuildServiceProvider();
         var mediator = provider.GetRequiredService<IMediator>();
 
         var sw = new Stopwatch();
@@ -44,19 +42,16 @@ public class ServiceCollectionFixture
     [Test]
     public async Task Should_be_able_to_add_participant_with_multiple_implementations_async()
     {
-        var services = new ServiceCollection();
-
-        services.AddMediator(builder =>
-        {
-            builder.AddParticipants(GetType().Assembly);
-        });
-
         var messageTracker = new MessageTracker();
 
-        services.AddSingleton<IMessageTracker>(messageTracker);
-        services.AddSingleton<MultipleParticipants, MultipleParticipants>();
+        var provider = new ServiceCollection()
+            .AddMediator()
+            .AddParticipants(GetType().Assembly)
+            .Services
+            .AddSingleton<IMessageTracker>(messageTracker)
+            .AddSingleton<MultipleParticipants, MultipleParticipants>()
+            .BuildServiceProvider();
 
-        var provider = services.BuildServiceProvider();
         var mediator = provider.GetRequiredService<IMediator>();
 
         await mediator.SendAsync(new MultipleParticipantMessageA());

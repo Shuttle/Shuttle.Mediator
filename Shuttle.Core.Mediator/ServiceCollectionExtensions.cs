@@ -8,19 +8,20 @@ public static class ServiceCollectionExtensions
 {
     extension(IServiceCollection services)
     {
-        public IServiceCollection AddMediator(Action<MediatorBuilder>? builder = null)
+        public MediatorBuilder AddMediator(Action<MediatorOptions>? configureOptions = null)
         {
-            Guard.AgainstNull(services);
-
-            var mediatorBuilder = new MediatorBuilder(services);
-
-            builder?.Invoke(mediatorBuilder);
+            var builder = new MediatorBuilder(Guard.AgainstNull(services));
 
             services.AddOptions();
-            services.TryAddScoped<IMediator, Mediator>();
-            services.AddSingleton<IParticipantDelegateProvider>(_ => new ParticipantDelegateProvider(mediatorBuilder.GetDelegates()));
+            services.AddOptions<MediatorOptions>().Configure(options =>
+            {
+                configureOptions?.Invoke(options);
+            });
 
-            return services;
+            services.TryAddScoped<IMediator, Mediator>();
+            services.AddSingleton<IParticipantDelegateProvider>(_ => new ParticipantDelegateProvider(builder.GetDelegates()));
+
+            return builder;
         }
     }
 }

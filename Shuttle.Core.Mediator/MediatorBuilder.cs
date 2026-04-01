@@ -4,7 +4,6 @@ using Shuttle.Core.Contract;
 using Shuttle.Core.Reflection;
 using System.Collections.ObjectModel;
 using System.Reflection;
-using System.Xml.Linq;
 
 namespace Shuttle.Core.Mediator;
 
@@ -15,12 +14,6 @@ public class MediatorBuilder(IServiceCollection services)
     private readonly Dictionary<Type, List<ParticipantDelegate>> _delegates = new();
 
     public IServiceCollection Services { get; } = Guard.AgainstNull(services);
-
-    public MediatorOptions Options
-    {
-        get;
-        set => field = value ?? throw new ArgumentNullException(nameof(value));
-    } = new();
 
     public MediatorBuilder AddParticipant<TParticipant>()
     {
@@ -128,11 +121,5 @@ public class MediatorBuilder(IServiceCollection services)
     public IDictionary<Type, List<ParticipantDelegate>> GetDelegates()
     {
         return new ReadOnlyDictionary<Type, List<ParticipantDelegate>>(_delegates);
-    }
-
-    public MediatorBuilder Configure(Action<MediatorOptions> configureOptions)
-    {
-        Services.Configure(configureOptions);
-        return this;
     }
 }
