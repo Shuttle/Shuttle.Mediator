@@ -118,6 +118,16 @@ public class MediatorBuilder(IServiceCollection services)
         return this;
     }
 
+    public MediatorBuilder AddParticipants()
+    {
+        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+        {
+            AddParticipants(assembly);
+        }
+
+        return this;
+    }
+
     public IDictionary<Type, List<ParticipantDelegate>> GetDelegates()
     {
         return new ReadOnlyDictionary<Type, List<ParticipantDelegate>>(_delegates);

@@ -15,36 +15,37 @@ In order to get all the relevant bits working you would need to register the `IM
 You can register the mediator using `IServiceCollection`:
 
 ```csharp
-services.AddMediator(builder =>
+services.AddMediator(options =>
 {
-    builder.AddParticipants(assembly);
-    builder.AddParticipant<Participant>();
-    builder.AddParticipant(participantType);
+    options.Sending += async (sender, args) => await Task.CompletedTask;
+}).AddParticipants(assembly);
+```
+
+The `AddMediator` method returns a `MediatorBuilder` that can be used to further configure the mediator:
+
+```csharp
+services.AddMediator()
+    .AddParticipants(assembly)
+    .AddParticipant<Participant>()
+    .AddParticipant(participantType)
     
     // The default service lifetime, Scoped, can be explicitly overidden:
-    builder.AddParticipant(participantType, _ => ServiceLifetime.Transient);
+    .AddParticipant(participantType, _ => ServiceLifetime.Transient)
     
     // Instance registration
-    builder.AddParticipant(participant);
+    .AddParticipant(participant)
     
     // Delegate registration
-    builder.AddParticipant(async (Message message, CancellationToken cancellationToken) =>
+    .AddParticipant(async (Message message, CancellationToken cancellationToken) =>
     {
         await Task.CompletedTask;
-    });
+    })
 
     // Delegate registration with dependency injection
-    builder.AddParticipant(async (Message message, IService service, CancellationToken cancellationToken) =>
+    .AddParticipant(async (Message message, IService service, CancellationToken cancellationToken) =>
     {
         await service.DoSomethingAsync(message);
     });
-
-    // Options configuration
-    builder.Configure(options =>
-    {
-        options.Sending.Register(async (sender, args) => await Task.CompletedTask);
-    });
-});
 ```
 
 
