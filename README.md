@@ -10,7 +10,7 @@ dotnet add package Shuttle.Core.Mediator
 
 ## Configuration
 
-In order to get all the relevant bits working you would need to register the `IMediator` dependency along with all the relevant `IParticipant` dependencies.
+Register the `IMediator` dependency along with all the relevant `IParticipant` dependencies.
 
 You can register the mediator using `IServiceCollection`:
 
@@ -18,14 +18,15 @@ You can register the mediator using `IServiceCollection`:
 services.AddMediator(options =>
 {
     options.Sending += async (sender, args) => await Task.CompletedTask;
-}).AddParticipants(assembly);
+}).AddParticipantsFrom(assembly);
 ```
 
 The `AddMediator` method returns a `MediatorBuilder` that can be used to further configure the mediator:
 
 ```csharp
 services.AddMediator()
-    .AddParticipants(assembly)
+    .AddParticipantsFrom(assembly)
+    .AddParticipantsFrom(new[] { assembly1, assembly2 })
     .AddParticipant<Participant>()
     .AddParticipant(participantType)
     
@@ -36,13 +37,13 @@ services.AddMediator()
     .AddParticipant(participant)
     
     // Delegate registration
-    .AddParticipant(async (Message message, CancellationToken cancellationToken) =>
+    .AddParticipant(async (UserCreated message, CancellationToken cancellationToken) =>
     {
         await Task.CompletedTask;
     })
 
     // Delegate registration with dependency injection
-    .AddParticipant(async (Message message, IService service, CancellationToken cancellationToken) =>
+    .AddParticipant(async (UserCreated message, IService service, CancellationToken cancellationToken) =>
     {
         await service.DoSomethingAsync(message);
     });

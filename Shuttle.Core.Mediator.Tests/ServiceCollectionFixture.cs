@@ -14,7 +14,7 @@ public class ServiceCollectionFixture
 
         var provider = new ServiceCollection()
             .AddMediator()
-            .AddParticipants(GetType().Assembly)
+            .AddParticipantsFrom(GetType().Assembly)
             .Services
             .BuildServiceProvider();
 
@@ -46,7 +46,7 @@ public class ServiceCollectionFixture
 
         var provider = new ServiceCollection()
             .AddMediator()
-            .AddParticipants(GetType().Assembly)
+            .AddParticipantsFrom(GetType().Assembly)
             .Services
             .AddSingleton<IMessageTracker>(messageTracker)
             .AddSingleton<MultipleParticipants, MultipleParticipants>()

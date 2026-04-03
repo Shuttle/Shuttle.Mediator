@@ -96,33 +96,19 @@ public class MediatorBuilder(IServiceCollection services)
         return this;
     }
 
-    public MediatorBuilder AddParticipants(Assembly assembly)
+    public MediatorBuilder AddParticipantsFrom(Assembly assembly)
     {
-        Guard.AgainstNull(assembly);
-
-        foreach (var type in assembly.GetTypesCastableToAsync(ParticipantType).GetAwaiter().GetResult())
-        {
-            var interfaces = type.GetInterfaces();
-
-            foreach (var @interface in interfaces)
-            {
-                if (@interface.Name != ParticipantType.Name)
-                {
-                    continue;
-                }
-
-                Services.TryAddScoped(ParticipantType.MakeGenericType(@interface.GetGenericArguments().First()), type);
-            }
-        }
-
-        return this;
+        return AddParticipantsFrom([Guard.AgainstNull(assembly)]);
     }
 
-    public MediatorBuilder AddParticipants()
+    public MediatorBuilder AddParticipantsFrom(Assembly[] assemblies)
     {
-        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+        foreach (var type in assemblies.SelectMany(assembly => assembly.FindTypesCastableTo(ParticipantType)))
         {
-            AddParticipants(assembly);
+            foreach (var @interface in type.GetInterfaces().Where(@interface => @interface.Name == ParticipantType.Name))
+            {
+                Services.TryAddScoped(ParticipantType.MakeGenericType(@interface.GetGenericArguments().First()), type);
+            }
         }
 
         return this;
