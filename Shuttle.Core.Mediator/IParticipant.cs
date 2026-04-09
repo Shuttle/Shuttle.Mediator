@@ -1,4 +1,4 @@
-﻿namespace Shuttle.Core.Mediator;
+﻿namespace Shuttle.Mediator;
 
 public interface IParticipant<in T>
 {

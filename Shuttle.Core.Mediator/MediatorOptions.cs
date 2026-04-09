@@ -1,6 +1,6 @@
 ﻿using Shuttle.Extensions.Options;
 
-namespace Shuttle.Core.Mediator;
+namespace Shuttle.Mediator;
 
 public class MediatorOptions
 {

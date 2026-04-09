@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Reflection.Emit;
 
-namespace Shuttle.Core.Mediator;
+namespace Shuttle.Mediator;
 
 internal class ParticipantInvoker
 {

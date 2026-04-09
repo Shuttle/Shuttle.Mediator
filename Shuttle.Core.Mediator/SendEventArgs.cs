@@ -1,6 +1,6 @@
-﻿using Shuttle.Core.Contract;
+﻿using Shuttle.Contract;
 
-namespace Shuttle.Core.Mediator;
+namespace Shuttle.Mediator;
 
 public class SendEventArgs(object message) : EventArgs
 {

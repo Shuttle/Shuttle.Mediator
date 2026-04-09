@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shuttle.Core.Mediator\Shuttle.Core.Mediator.csproj" />
+    <ProjectReference Include="..\Shuttle.Mediator\Shuttle.Mediator.csproj" />
   </ItemGroup>
 
 </Project>

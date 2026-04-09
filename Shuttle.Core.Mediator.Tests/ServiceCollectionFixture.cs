@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
-namespace Shuttle.Core.Mediator.Tests;
+namespace Shuttle.Mediator.Tests;
 
 [TestFixture]
 public class ServiceCollectionFixture

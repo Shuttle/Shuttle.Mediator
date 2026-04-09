@@ -1,4 +1,4 @@
-﻿namespace Shuttle.Core.Mediator;
+﻿namespace Shuttle.Mediator;
 
 public class ParticipantDelegateProvider(IDictionary<Type, List<ParticipantDelegate>> participantDelegates)
     : IParticipantDelegateProvider

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace Shuttle.Core.Mediator;
+namespace Shuttle.Mediator;
 
 public class ParticipantDelegate(Delegate handler, IEnumerable<Type> parameterTypes)
 {

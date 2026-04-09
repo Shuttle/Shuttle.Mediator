@@ -1,4 +1,4 @@
-﻿namespace Shuttle.Core.Mediator.Tests;
+﻿namespace Shuttle.Mediator.Tests;
 
 public class RegisterMessage
 {

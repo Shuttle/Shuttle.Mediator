@@ -1,8 +1,0 @@
-<Solution>
-  <Folder Name="/Solution Items/">
-    <File Path="LICENSE" />
-    <File Path="README.md" />
-  </Folder>
-  <Project Path="Shuttle.Core.Mediator.Tests/Shuttle.Core.Mediator.Tests.csproj" />
-  <Project Path="Shuttle.Core.Mediator/Shuttle.Core.Mediator.csproj" />
-</Solution>

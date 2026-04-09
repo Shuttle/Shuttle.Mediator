@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Shuttle.Core.Contract;
-using Shuttle.Core.Reflection;
+using Shuttle.Contract;
+using Shuttle.Reflection;
 using System.Collections.ObjectModel;
 using System.Reflection;
 
-namespace Shuttle.Core.Mediator;
+namespace Shuttle.Mediator;
 
 public class MediatorBuilder(IServiceCollection services)
 {

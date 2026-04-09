@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Options;
 using NUnit.Framework;
 
-namespace Shuttle.Core.Mediator.Tests;
+namespace Shuttle.Mediator.Tests;
 
 [TestFixture]
 public class MediatorFixture
