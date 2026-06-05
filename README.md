@@ -1,11 +1,11 @@
-# Shuttle.Core.Mediator
+# Shuttle.Mediator
 
-The Shuttle.Core.Mediator package provides a [mediator pattern](https://en.wikipedia.org/wiki/Mediator_pattern) implementation.
+The Shuttle.Mediator package provides a [mediator pattern](https://en.wikipedia.org/wiki/Mediator_pattern) implementation.
 
 ## Installation
 
 ```bash
-dotnet add package Shuttle.Core.Mediator
+dotnet add package Shuttle.Mediator
 ```
 
 ## Configuration
